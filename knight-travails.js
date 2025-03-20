@@ -91,15 +91,65 @@ function allMoves(loc1, loc2, adjacencyList, visited) {
       total = 0;
     }
   }
-  console.log("done");
+}
+
+function shortestPath(adjacencyList, dest, finalArr=[]) {
+  if (typeof dest !== 'string') {
+    dest = dest[0].toString() + dest[1].toString();
+  }
+  let value;
+  let done = false;
+  let allKeyValues = adjacencyList[Symbol.iterator]();
+  for (let item of allKeyValues) {
+    if (item[0] === dest) {
+      finalArr.push(item[0]);
+      return;
+    }
+    value = item[1];
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === dest) {
+        shortestPath(adjacencyList, item[0], finalArr);
+        finalArr.push(value[i]);
+        done = true;
+        break;
+      }
+    }
+    if (done) break;
+  }
+  return finalArr;
+}
+
+function pathArr(strArr) {
+  let resultArr = [];
+  let node;
+  for (let i = 0; i < strArr.length; i++) {
+    node = [+strArr[i][0], +strArr[i][1]];
+    resultArr.push(node);
+  }
+  return resultArr;
 }
 
 function knightMoves(loc1, loc2) {
   let visited = [];
   let adjacencyList = new Map();
   allMoves(loc1, loc2, adjacencyList, visited);
-  console.log(adjacencyList);
-  // console.log(visited);
+  let resultStrArr = shortestPath(adjacencyList, loc2);
+  return pathArr(resultStrArr);
 }
 
-knightMoves([0, 0], [7, 7]);
+function printPath(pathArr) {
+  console.log();
+  console.log(`You made it in ${pathArr.length - 1} moves! Here's your path: `);
+  for (let i = 0; i < pathArr.length; i++) {
+    if (i === 0) {
+      process.stdout.write(`[${pathArr[i]}]`);
+    } else {
+      process.stdout.write(` ---> [${pathArr[i]}]`);
+    }
+  }
+  console.log();
+  console.log();
+  return;
+}
+
+printPath(knightMoves([3, 3], [4, 3]));
